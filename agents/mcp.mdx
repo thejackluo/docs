@@ -1,22 +1,21 @@
 ---
 title: "MCP server"
-description: "Connect an MCP client to the vault over stdio."
+description: "The MCP tools, over stdio or HTTP."
 ---
 
 ## Configure a client
 
-`brain mcp` runs a Model Context Protocol server on standard input and output. Add it to your client's MCP configuration:
+[Install for an assistant](/agents/install) prints the exact setup for each client. By hand: `brain mcp` runs a Model Context Protocol server on standard input and output. Add it to your client's MCP configuration:
 
 ```json
 {
   "command": "python3",
   "args": ["-m", "brain", "mcp"],
-  "cwd": "/path/to/vault",
-  "env": { "BRAIN_ACTOR": "agent-name" }
+  "env": { "BRAIN_ROOT": "/path/to/vault", "BRAIN_ACTOR": "agent-name" }
 }
 ```
 
-Use the Python interpreter from the environment where the tool is installed. `BRAIN_ACTOR` is the name the agent's writes are attributed to.
+Use the Python interpreter from the environment where the tool is installed. `BRAIN_ROOT` is the folder of Markdown files. `BRAIN_ACTOR` is the name the agent's writes are attributed to. Remote clients use `POST /mcp` on the web app instead.
 
 ## Tools
 

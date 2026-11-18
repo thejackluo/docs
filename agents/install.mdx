@@ -1,0 +1,91 @@
+---
+title: "Install for an assistant"
+description: "Connect the brain to Claude, Cursor, Codex, Poke, ChatGPT and other MCP clients."
+---
+
+## Two ways to connect
+
+| The assistant | Connects by | Data |
+|---|---|---|
+| Runs on your machine: Claude Desktop, Claude Code, Cursor, VS Code, Codex, Windsurf | Starting `brain mcp` locally | Markdown files in a folder you choose. Nothing leaves the machine |
+| Runs in the cloud: Poke, Claude on the web, ChatGPT | The web app's `/mcp` address and a token | The vault the web app serves |
+
+Local is the default. Any folder of Markdown files works; a folder without its own `schema/` uses the built-in types.
+
+## One prompt
+
+Paste this into an assistant that can run commands. It installs the tool, registers the server and checks that it works. `brain install --client prompt` prints the same text with your folder filled in.
+
+```text
+Install the "brain" MCP server for me. It gives you my second brain: Markdown notes on this machine, read and written through a few tools.
+
+1. Check `python3 --version` is 3.10 or newer. Then install the tool: `pipx install git+https://github.com/thejackluo/jack-memory` (or `uv tool install …`, or `pip install --user …`). Skip this if `brain --help` already works.
+2. My notes folder: <ask me which folder holds my Markdown notes; any folder works>
+3. Run `brain --root "<that folder>" install --client <you>` where <you> is one of: claude-desktop, claude-code, cursor, vscode, codex, windsurf. It prints the exact command or config for you. Apply it yourself; do not ask me to copy it.
+4. Reload your MCP servers (or tell me to restart you if you cannot).
+5. Prove it works: call `brain_skill`, then `brain_context`, and tell me in three lines what the brain knows about me.
+
+Rules for using it afterwards: call `brain_context "<topic>"` before working on anything about me, my projects or people I know. Save new facts with `brain_capture` or `brain_claim` and always give a source. Everything stays in local Markdown files; do not upload them anywhere.
+```
+
+## Local assistants
+
+```bash
+brain --root ~/notes install                      # every local client
+brain --root ~/notes install --client cursor      # one client
+```
+
+The output is a command to run or a config block to paste, with absolute paths:
+
+| Client | What you get |
+|---|---|
+| Claude Code | `claude mcp add brain …` |
+| Cursor | A one-click install link, and the `~/.cursor/mcp.json` block |
+| VS Code | `code --add-mcp …` |
+| Codex | `codex mcp add brain …` |
+| Claude Desktop, Windsurf | The JSON block for the client's config file |
+
+Each client writes under its own name, so the journal shows which assistant added a line.
+
+## Hosted assistants
+
+Hosted assistants need the web app reachable over HTTPS. See [Deploy](/operations/deploy).
+
+```bash
+brain install --client poke --url https://brain.example.com
+```
+
+Without `--token` the command generates one and prints the line to add to `BRAIN_API_TOKENS` on the server. Restart the web app after adding it.
+
+| Client | What you get |
+|---|---|
+| Poke | A prefilled link that opens the integration form with the address and key; press Create Integration |
+| Claude on the web, ChatGPT | An address with the token in it, because these clients only store a URL. Treat it as a password |
+| Claude Code, Cursor, VS Code | The address with an `Authorization: Bearer` header |
+
+<Warning>
+A read-only copy of the brain hides the write tools and refuses them. To let a hosted assistant write, point it at the writable web app.
+</Warning>
+
+## The `/mcp` endpoint
+
+`POST /mcp` speaks MCP over HTTP with JSON responses and no session. It needs `Authorization: Bearer <token>`, or the token as the last path segment: `/mcp/<token>`. The token's name is the actor, so the same proposal rules apply as on the [HTTP API](/agents/http-api).
+
+```bash
+curl -s https://brain.example.com/mcp \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"brain_context","arguments":{"topic":"Orbit"}}}'
+```
+
+## What a wrong call gets back
+
+Tools are written for agents that guess. A bad call returns an error that says what to send instead, and never ends the session.
+
+| The agent sends | It gets |
+|---|---|
+| A missing argument | The argument list and a working example |
+| An unknown argument | The same, naming the extra one |
+| `id`, `query` or `q` in place of `ref`, `text` or `question` | Accepted |
+| `"5"` for a number, `"false"` for a boolean | Accepted |
+| A reference that matches nothing | The three closest nodes |
+| A result over about 15,000 tokens | The first part, and a note on how to narrow the request |
