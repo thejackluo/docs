@@ -1,0 +1,49 @@
+---
+title: "Links, mentions and groups"
+description: "How notes are connected without manual linking."
+---
+
+## Three kinds of connection
+
+| Kind | Where it lives | Created by |
+|---|---|---|
+| Link | `[[people/dana-wu]]` in the Markdown | You, or magic linking |
+| Mention | The index only | A page name or alias appearing in text |
+| Typed reference | A `ref` or `refs` field | You, or automatic structure |
+
+Backlinks are the reverse of all three and are shown on every node.
+
+## Magic linking
+
+When the owner captures or saves text, names of existing pages and their aliases become `[[links]]`. Turn it off for one write with `--no-magic` or the capture toggle. Agents can preview it without writing through the MCP tool `brain_magic` or `POST /api/magic`.
+
+## Mentions
+
+Mentions are found when the index is built. They do not change any file. Use them to see every place a topic comes up:
+
+```bash
+brain mentions "Orbit"
+brain mentions date:2026-03-02
+```
+
+To turn a hub's unlinked mentions into real links:
+
+```bash
+brain link-mentions concepts/pricing            # preview
+brain link-mentions concepts/pricing --write    # owner only
+```
+
+## Hubs and aliases
+
+Every project, person, place, event, concept, belief and book is a hub: its name is matched wherever it appears. Give a hub extra names in `schema/connectors/hubs.yaml`. A hub listed there without a page of its own appears as a private, read-only page built from its mentions.
+
+## Groups
+
+Inside each type, every node gets a group. The graph shows groups as clusters and the type pages show them as filters. A group is chosen in this order:
+
+1. An explicit `group`, `category` or `genre` field on the note.
+2. A rule for the type, for example writing by its first tag, meetings by year.
+3. The project, concept or place the note is most connected to.
+4. Its year.
+
+Override any group by adding `group:: <name>` to the note.

@@ -1,97 +1,27 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Brain"
+description: "A second brain in plain Markdown that people browse and agents query."
 ---
 
-## Setting up
+Brain is a private knowledge system for one person. The data is a folder of Markdown files in Git. Everything else, including the search index, the web app and the agent tools, is built from those files and can be rebuilt at any time.
 
-Get your documentation site up and running in minutes.
+## What it does
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+- **Stores knowledge as typed nodes.** Every Markdown file is a node with a type such as person, project, belief, decision, meeting or essay. Types define fields, so nodes can be queried like rows.
+- **Connects notes automatically.** Names of existing pages are linked when you write, and mentions are indexed even when you do not link them.
+- **Answers questions with sources.** Search and Ask return the lines that support an answer, with the note id and line number.
+- **Briefs AI agents.** One call returns a dated, sourced pack on a topic, sized for a context window.
+- **Pulls from other tools.** Notion syncs both ways. Meeting notes, chat exports, contacts and Google Docs import as sources.
 
-## Make it yours
+## Who uses what
 
-Design a docs site that looks great and empowers your users.
+| You are | Use | Start at |
+|---|---|---|
+| The owner | The web app | [Web app](/operations/web-app) |
+| An AI agent | The `brain` CLI, the MCP server or the HTTP API | [Agents overview](/agents/overview) |
+| Setting it up | Python 3.12 and a vault checkout | [Quickstart](/quickstart) |
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+## Two rules that shape everything
 
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+1. **Markdown is the source of truth.** The SQLite index is a cache. Delete it and it rebuilds.
+2. **The brain explains; it does not overrule.** It is the place for why something happened and who was involved. For current facts such as where the owner lives or how many users a product has, the owner's own record wins, and every briefing shows how old its data is. See [Claims and freshness](/concepts/claims-and-freshness).

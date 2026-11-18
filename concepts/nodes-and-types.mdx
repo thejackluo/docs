@@ -1,0 +1,72 @@
+---
+title: "Nodes and types"
+description: "Every file is a node, and every node has a type."
+---
+
+## A node
+
+A node is one Markdown file. Its id is its path without `.md`, for example `people/dana-wu`.
+
+```markdown
+---
+title: Dana Wu
+type: person
+company: Kaiser
+relationship: collaborator
+---
+
+Met at the 2026 pricing workshop.
+
+## Claims
+- Leads procurement for the west region [source: meetings/orbit-pricing-sync; added: 2026-03-02; confidence: medium]
+```
+
+Fields can be set in the frontmatter or inline in the body as `key:: value`.
+
+## Types
+
+A type, also called a supertag, is one YAML file in `schema/`. It names a folder, a default visibility and a set of fields.
+
+The built-in types are: `person`, `project`, `meeting`, `decision`, `belief`, `concept`, `essay`, `idea`, `goal`, `task`, `book`, `event`, `place`, `period`, `dream`, `day`, `source` and `page`.
+
+```bash
+brain types       # every type with its fields
+```
+
+A node's type comes from `type:` in its frontmatter. For older pages without one, the first tag that matches a type is used.
+
+## Field types
+
+| Type | Value |
+|---|---|
+| `text`, `int`, `number`, `bool`, `url` | Plain values |
+| `date` | `YYYY-MM-DD` |
+| `enum` | One of the listed `values` |
+| `ref` | A link to one node, optionally limited to certain types |
+| `refs` | A list of links |
+| `list` | A list of text |
+| computed | Derived when the index is built. Do not write these by hand. |
+
+Computed fields aggregate over other nodes. For example a person's `last_contact` is the latest date of any meeting that lists them in `people`.
+
+## Automatic structure for new pages
+
+When a page is added through `capture`, `add`, the web app or an importer, the tool fills in structure:
+
+- If you give no type, `brain add auto "<title>"` infers one from the title and body.
+- Names of existing pages in the body become links.
+- Typed references are filled, for example the people on a meeting.
+
+An inferred type is recorded as `inferred:` in the frontmatter so it can be reviewed. Anything you set yourself is kept.
+
+```bash
+brain suggest "Coffee with Dana Wu"     # preview the structure, nothing is written
+```
+
+## Visibility
+
+Each node is `public`, `private` or `secret`. The type sets the default and a node can override it in frontmatter. Only `public` nodes are ever published outside the vault, and `secret` nodes are never sent to a language model.
+
+## Adding a type
+
+Keep the set small. Add a type only when more than a handful of nodes need fields that no existing type has, and only with the owner's approval.

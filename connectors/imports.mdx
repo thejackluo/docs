@@ -1,0 +1,20 @@
+---
+title: "File imports"
+description: "Bring in meeting notes, chat exports, contacts and agent memory."
+---
+
+Every importer stores the original material as a source under `raw/<kind>/`, fills empty fields on typed nodes, and sends any change to a value the owner already set to Review. Each takes `--dry-run`.
+
+| Command | Input | Result |
+|---|---|---|
+| `brain import granola <cache-v3.json>` | The Granola desktop cache | `meeting` nodes with their people, and transcripts in `raw/granola/` |
+| `brain import chatgpt <conversations.zip> [--since YYYY-MM-DD]` | A ChatGPT data export | One searchable source per conversation in `raw/chatgpt/` |
+| `brain import rolo <contacts.csv>` | A Rolo CSV or JSON export | `person` nodes with email, company, role and LinkedIn; notes as claims |
+| `brain import devin <memory folder>` | A Devin memory checkout | A mirror in `raw/devin/` |
+| `brain import gdrive <folder>` | Google Drive folders | See [Google Drive](/connectors/google-drive) |
+
+Import state is kept in `.brain/sync/<connector>.json`, so running an import twice does not create duplicates.
+
+## The inbox folder
+
+On a server with the [schedule](/operations/schedule) installed, drop an export into `inbox/granola/`, `inbox/chatgpt/`, `inbox/rolo/` or `inbox/devin/` in the vault. The next run imports it and moves the file to `inbox/done/`.

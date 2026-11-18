@@ -1,0 +1,64 @@
+---
+title: "Context briefings"
+description: "One call that returns a dated, sourced pack on a topic."
+---
+
+## Two forms
+
+```bash
+brain context                              # who the owner is right now
+brain context "Orbit"                      # a briefing on one topic
+brain context "Orbit" --budget 600         # a smaller one
+```
+
+The same call exists as the MCP tool `brain_context` with `topic` and `budget`, and as `GET /api/context?topic=<topic>&budget=1500`.
+
+## What a topic briefing contains
+
+| Section | Content |
+|---|---|
+| Header | The topic, today's date, and the reminder that the owner's record wins on current facts |
+| The page | Type, group, id, aliases, fields and the first paragraph of the matching node |
+| Sourced claims | Claims on that node with source, date added and confidence |
+| Connected | People, projects, decisions, concepts, meetings and other nodes linked to it, by type |
+| Evidence | Lines quoted word for word from the best matching notes, each with note id, line number and date |
+| Freshness | The date of the newest note found for the topic |
+| Next | The calls to make for more detail |
+
+If no page is titled with the topic, the briefing says so and lists the closest notes instead. If nothing matches at all, it says that the vault has nothing and suggests asking the owner.
+
+## Budget
+
+`budget` is in tokens, counted as about four characters each. The default is 1,500.
+
+When a briefing is too long it is cut in this order: the tail of the longest sections, then the text of the longest lines, then whole sections from the end. The title and the reminder always stay. A claim or quote is never left without its source; if it cannot fit with its source, the line is dropped.
+
+## Example
+
+```text
+# Brain brief: Orbit (2026-11-18)
+> Use this for why and who. For current facts (location, numbers, results) Jack's own record wins; check the dates below before repeating anything as current.
+
+## Orbit
+#project · Active · [[projects/orbit]]
+
+## Sourced claims
+- Charges per seat [source: [[meetings/orbit-pricing-sync]]; added: 2026-03-02; confidence: medium]
+
+## Connected
+- person (1): [[people/dana-wu|Dana Wu]]
+- meeting (1): [[meetings/orbit-pricing-sync|Orbit pricing sync]] (2026-03-02)
+
+## Evidence (verbatim lines; automatic matches, not verified claims)
+- Dana wants per-seat pricing before the pilot. — [[meetings/orbit-pricing-sync]] L6 (2026-03-02, 261d ago)
+
+## Freshness
+- Newest dated note found for this topic is 2026-03-02 (261d ago). Later events may not be in the brain.
+
+## Next
+- `brain get projects/orbit` for the full page
+```
+
+## Speed
+
+On a vault of about 1,600 notes, a topic briefing from the CLI takes 0.4 to 0.8 seconds including process start. Through a running MCP server or the HTTP API it takes 0.1 to 0.3 seconds.

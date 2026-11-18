@@ -1,0 +1,43 @@
+---
+title: "Query language"
+description: "List nodes by type and field values."
+---
+
+## Form
+
+```text
+<type | *> [where <condition> [and <condition>]…] [sort <field> [asc|desc]] [limit <n>]
+```
+
+## Conditions
+
+| Form | Meaning |
+|---|---|
+| `field = value`, `field != value` | Equal, not equal |
+| `field < value`, `<=`, `>`, `>=` | Comparison for numbers and dates |
+| `field ~ value` | Contains |
+| `has field` | The field is set |
+| `missing field` | The field is not set |
+
+## Values
+
+| Value | Example |
+|---|---|
+| Number | `4` |
+| Date | `2026-01-01` |
+| Relative date | `-60d`, `+2w`, `-3m`, `-1y`, counted from today |
+| Text | `"two words"` or a bare word |
+
+Besides a type's own fields, every node has `id`, `type`, `title`, `visibility`, `summary`, `updated`, `backlinks` and `tags`.
+
+## Examples
+
+```bash
+brain query 'person where last_contact < -60d and closeness >= 4 sort last_contact'
+brain query 'meeting where date >= 2026-01-01 sort date desc limit 10'
+brain query 'decision where status = open'
+brain query 'book where missing category'
+brain query '* where title ~ pricing'
+```
+
+The same queries work at `/q` in the web app, through the MCP tool `brain_query` and at `GET /api/query?q=…`.

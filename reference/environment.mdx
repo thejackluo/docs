@@ -1,0 +1,50 @@
+---
+title: "Environment variables"
+description: "Every setting the tool reads."
+---
+
+## Vault and actor
+
+| Variable | Meaning |
+|---|---|
+| `BRAIN_ROOT` | Path to the vault |
+| `BRAIN_ACTOR` | Who is writing. Default `jack` |
+| `BRAIN_AGENT_TRUST` | Comma-separated operations agents may apply directly. Default `capture,claim` |
+
+## Web app and API
+
+| Variable | Meaning |
+|---|---|
+| `BRAIN_PASSWORD_HASH` | Hash of the sign-in password. Use this on a server |
+| `BRAIN_PASSWORD` | Plain password, for local use only |
+| `BRAIN_SECRET_KEY` | Signs session cookies. Required with a password hash |
+| `BRAIN_API_TOKENS` | `name:token` pairs separated by commas, for agents |
+| `BRAIN_READONLY` | `1` refuses all writes |
+| `BRAIN_SECURE_COOKIE` | `1` sends the session cookie over HTTPS only |
+
+## Index
+
+| Variable | Meaning |
+|---|---|
+| `BRAIN_INDEX_PATH` | Where the index file is kept. Default `.brain/index.sqlite` |
+| `BRAIN_NODE_CACHE` | Where the parsed-note cache is kept. Default `.brain/nodes.pickle` |
+| `BRAIN_TRUST_INDEX` | `1` uses a shipped index without checking it against the files. For read-only snapshots |
+| `BRAIN_FRESH_SECONDS` | How long a check for changed files is trusted. Default `1` |
+
+## Ask
+
+| Variable | Meaning |
+|---|---|
+| `ANTHROPIC_API_KEY` | Enables the `haiku` answer mode |
+| `BRAIN_ASK_MODEL` | The model used for that mode |
+
+## Connectors
+
+| Variable | Meaning |
+|---|---|
+| `NOTION_TOKEN` | Notion integration token |
+| `BRAIN_SELF_EMAILS` | The owner's email addresses, so imports do not create a person page for the owner |
+| `GDRIVE_SERVICE_ACCOUNT_FILE` | Path to a Google service-account key |
+| `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET`, `GDRIVE_REFRESH_TOKEN` | Google OAuth client credentials |
+
+Never commit any of these values.

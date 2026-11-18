@@ -1,0 +1,43 @@
+---
+title: "Claims and freshness"
+description: "Every fact carries a source, a date and a confidence, and old data is labelled."
+---
+
+## Claims
+
+A claim is one short fact on a node. It always has a source and a confidence.
+
+```markdown
+- Charges per seat [source: meetings/orbit-pricing-sync; added: 2026-03-02; confidence: medium]
+```
+
+```bash
+brain claim projects/orbit "Charges per seat" --source meetings/orbit-pricing-sync --confidence medium
+```
+
+The source can be a node id, a URL or a link to an agent session. The command refuses a claim without one.
+
+Confidence is `low`, `medium` or `high`. Use `high` only for what the owner told you directly.
+
+## Sources stay as imported
+
+Nodes under `raw/` are evidence. An importer writes each one once and does not change it later. When the original changes, the new version is stored as a new source, so a citation always points at the text it was made from.
+
+## What the brain is the authority on
+
+The brain is the authority on reasons and relationships: why a decision was made, what someone said in a meeting, who a person is to the owner.
+
+It is not the authority on current facts. Location, job title, user counts and recent results come from the owner's own record. If the two disagree, the owner's record is right.
+
+## Freshness labels
+
+Parts of a vault can be months old, so the tool says how old its data is.
+
+- A hand-written page that states `Last updated: YYYY-MM-DD` is a snapshot. Pages and briefings show its age.
+- After 45 days a snapshot is marked `MAY BE OUTDATED`.
+- Briefings give the date of every evidence line, and the date of the newest note found for the topic.
+- The Now page lists only the last 30 days and leaves out future dates.
+
+## Missing is not false
+
+A search that finds nothing means the connected sources do not cover the topic. It does not mean the thing did not happen. Briefings say so in plain words and suggest asking the owner.

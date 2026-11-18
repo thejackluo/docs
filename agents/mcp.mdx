@@ -1,0 +1,53 @@
+---
+title: "MCP server"
+description: "Connect an MCP client to the vault over stdio."
+---
+
+## Configure a client
+
+`brain mcp` runs a Model Context Protocol server on standard input and output. Add it to your client's MCP configuration:
+
+```json
+{
+  "command": "python3",
+  "args": ["-m", "brain", "mcp"],
+  "cwd": "/path/to/vault",
+  "env": { "BRAIN_ACTOR": "agent-name" }
+}
+```
+
+Use the Python interpreter from the environment where the tool is installed. `BRAIN_ACTOR` is the name the agent's writes are attributed to.
+
+## Tools
+
+### Read
+
+| Tool | Purpose |
+|---|---|
+| `brain_context` | Call first. No arguments: who the owner is now. With `topic` and optional `budget`: a topic briefing |
+| `brain_skill` | The how-to for agents |
+| `brain_search` | Full-text search |
+| `brain_get` | One node by `ref` (id, path or title) |
+| `brain_query` | A structured query |
+| `brain_ask` | A question answered with sources |
+| `brain_mentions` | Excerpts that mention a node, alias or `date:YYYY-MM-DD` |
+| `brain_types` | Types and their fields |
+| `brain_lint` | Vault health summary |
+
+### Preview, nothing written
+
+| Tool | Purpose |
+|---|---|
+| `brain_suggest` | The type, tags, links and references a new page would get |
+| `brain_magic` | Page names found in a piece of text |
+| `brain_link_mentions` | Which notes would get links for a hub's unlinked mentions |
+
+### Write
+
+| Tool | What happens for an agent |
+|---|---|
+| `brain_capture` | Applied directly to today's journal |
+| `brain_claim` | Applied directly; needs a source |
+| `brain_add`, `brain_set`, `brain_link` | Filed as a proposal for the owner |
+
+See [Writing back](/agents/writing) for the rules.

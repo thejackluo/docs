@@ -1,0 +1,69 @@
+---
+title: "Google Drive"
+description: "Import Google Docs and text files from chosen folders as sources."
+---
+
+<Warning>
+This connector has been tested against a local stand-in for Google's API, not against Google itself. Run it with `--dry-run` first.
+</Warning>
+
+## What it does
+
+```bash
+brain import gdrive <folder id or URL>[,<another>] --dry-run
+brain import gdrive <folder id or URL>
+```
+
+- Walks each folder and its subfolders.
+- Exports Google Docs as Markdown, or as plain text when Markdown export is not available.
+- Downloads `.md`, `.markdown` and `.txt` files.
+- Skips everything else.
+- Writes each document to `raw/gdrive/<modified date>-<name>.md` with its Drive link.
+
+Access is read-only. The connector asks Google only for the `drive.readonly` scope.
+
+## Credentials
+
+Set one of these in the environment.
+
+<Tabs>
+  <Tab title="Service account">
+    1. In Google Cloud, enable the Drive API and create a service account with a JSON key.
+    2. Share each Drive folder with the service account's email address.
+    3. Install the extra and point to the key file:
+
+    ```bash
+    pip install -e ".[gdrive]"
+    export GDRIVE_SERVICE_ACCOUNT_FILE=/path/to/key.json
+    ```
+  </Tab>
+  <Tab title="OAuth client">
+    Approve the client once in a browser to get a refresh token, then set:
+
+    ```bash
+    export GDRIVE_CLIENT_ID=…
+    export GDRIVE_CLIENT_SECRET=…
+    export GDRIVE_REFRESH_TOKEN=…
+    ```
+  </Tab>
+</Tabs>
+
+Keep key files and tokens out of the vault repository.
+
+## Revisions
+
+Sources are never changed after import, so each version of a document is its own source.
+
+| In Drive | In the vault |
+|---|---|
+| Nothing changed | Nothing is downloaded |
+| The text changed | A new source; the earlier one is untouched |
+| The file was renamed | A new source under the new name |
+| The local source file was deleted | The document is imported again |
+| The file went back to an earlier name and text | The earlier source is reused |
+
+A path that was once given to a source is never given to a different one, so existing citations keep pointing at the same text.
+
+## Failures
+
+If Google returns an error partway through, the command stops with that error. Documents imported before the failure are recorded, and the next run continues without creating second copies.

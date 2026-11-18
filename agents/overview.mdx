@@ -1,0 +1,47 @@
+---
+title: "Agents overview"
+description: "How an AI agent learns the vault in one read and pulls context in a few calls."
+---
+
+An agent needs three things: a short description of how the vault works, a fast way to get context on a topic, and clear rules for writing back. Brain provides each one over the CLI, the MCP server and the HTTP API.
+
+## The skill file
+
+`brain/SKILL.md` is a short how-to written for agents. It says what the vault is good for, which calls to make, how to write, and what not to trust. An agent can get it four ways:
+
+| Where | How |
+|---|---|
+| File | `brain/SKILL.md`, also linked at `.agents/skills/jack-brain/SKILL.md` for tools that load skills from that folder |
+| CLI | `brain skill` |
+| MCP | the `brain_skill` tool |
+| HTTP | `GET /api/skill` |
+
+## The read pattern
+
+<Steps>
+  <Step title="Once per session: who the owner is now">
+    `brain context` returns the current state, open decisions, active goals and latest meetings. Each section states its age.
+  </Step>
+  <Step title="Before working on something: a topic briefing">
+    `brain context "<topic>"` returns one pack on a person, project, concept or phrase. See [Context briefings](/agents/context).
+  </Step>
+  <Step title="Only if needed: go deeper">
+    `brain ask "<question>"` for a specific question, `brain get <id>` for a full page, `brain query '…'` for a list, `brain search "<words>"` when you do not know the name.
+  </Step>
+</Steps>
+
+Cite the note id, for example `[[people/dana-wu]]`, for anything taken from the vault.
+
+## What an agent must not assume
+
+- **Old data is history.** A section marked `MAY BE OUTDATED` or `Nd ago` describes the past. For current facts the owner's own record wins.
+- **Missing is not false.** If nothing matches, say so and ask. Do not infer.
+- **Evidence lines are matches, not verified facts.** Only entries under "Sourced claims" were recorded as facts with a source.
+
+## Choosing a connection
+
+| Agent runs | Use |
+|---|---|
+| On the same machine as the vault | The CLI, or the [MCP server](/agents/mcp) |
+| In a tool that supports MCP | The [MCP server](/agents/mcp) |
+| On another machine | The [HTTP API](/agents/http-api) with a bearer token |

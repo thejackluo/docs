@@ -1,0 +1,64 @@
+---
+title: "CLI reference"
+description: "Every brain command."
+---
+
+## Global options
+
+Place these before the command.
+
+| Option | Meaning |
+|---|---|
+| `--root <path>` | The vault. Default: `BRAIN_ROOT`, or the nearest folder that contains `schema/` |
+| `--actor <name>` | Who is writing. Default: `BRAIN_ACTOR`, or `jack` |
+| `--json` | Machine-readable output |
+
+## Read
+
+| Command | Purpose |
+|---|---|
+| `brain context [topic] [--budget N]` | Current state, or a topic briefing. Budget is in tokens, default 1500 |
+| `brain skill` | The how-to for agents |
+| `brain search <text> [--type T] [--limit N]` | Full-text search |
+| `brain get <ref> [--no-body]` | One node by id, path, title or alias |
+| `brain query '<query>'` | A [structured query](/reference/query-language) |
+| `brain ask "<question>" [--mode extractive\|haiku]` | A question answered with sources |
+| `brain mentions <ref> [--limit N]` | Excerpts that mention a node, alias or `date:YYYY-MM-DD` |
+| `brain types` | Types and fields |
+| `brain lint` | Vault health |
+
+## Write
+
+| Command | Purpose |
+|---|---|
+| `brain capture [text] [--day YYYY-MM-DD] [--no-magic]` | Append to a journal day. Reads standard input when no text is given |
+| `brain add <type\|auto> <title> [-f key=value]… [--body …] [--visibility …]` | Create a node |
+| `brain suggest <title> [--body …] [--type T]` | Preview the structure a new page would get |
+| `brain set <ref> <field> <value>` | Set one field |
+| `brain claim <ref> <text> --source <src> [--confidence low\|medium\|high]` | Add a sourced claim |
+| `brain link <ref> <to> [--note …]` | Link two nodes |
+| `brain link-mentions [ref] [--all] [--write]` | Turn unlinked mentions of a hub into links. Preview unless `--write` |
+
+## Review
+
+| Command | Purpose |
+|---|---|
+| `brain proposals` | List pending proposals |
+| `brain accept <id>` | Apply one |
+| `brain reject <id>` | Discard one |
+
+## Connect
+
+| Command | Purpose |
+|---|---|
+| `brain sync notion [--dry-run] [--pull-only] [--push-only] [--only <type>]` | [Notion sync](/connectors/notion) |
+| `brain import <granola\|chatgpt\|rolo\|devin\|gdrive> <path> [--dry-run] [--since YYYY-MM-DD]` | [Imports](/connectors/imports) |
+| `brain publish <out> [--write]` | [Publish public pages](/connectors/publish) |
+
+## Run
+
+| Command | Purpose |
+|---|---|
+| `brain serve [--host H] [--port P]` | The web app and HTTP API. Default `127.0.0.1:8787` |
+| `brain mcp` | The MCP server on standard input and output |
+| `brain bench [--sizes …] [--queries N] [--seeds N] [--ask cases.yaml] [--out dir]` | Benchmarks |
