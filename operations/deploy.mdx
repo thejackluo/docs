@@ -1,0 +1,65 @@
+---
+title: "Deploy"
+description: "Run the web app and agent API on a Linux server behind a password."
+---
+
+## Configure
+
+```bash
+cp deploy/env.example deploy/.env
+python3 -c "from werkzeug.security import generate_password_hash as h; print(h(input('password: ')))"   # BRAIN_PASSWORD_HASH
+python3 -c "import secrets; print(secrets.token_hex(32))"                                               # BRAIN_SECRET_KEY
+python3 -c "import secrets; print('agent-name:' + secrets.token_urlsafe(32))"                           # BRAIN_API_TOKENS
+```
+
+Put the three values in `deploy/.env`. In a Compose `.env` file, write every `$` in the password hash as `$$`. Keep this file out of Git.
+
+## Run
+
+<Tabs>
+  <Tab title="Docker">
+    ```bash
+    docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+    ```
+
+    The app listens on `127.0.0.1:8787` with the vault mounted from the host. Change the vault path with `BRAIN_VAULT`.
+  </Tab>
+  <Tab title="systemd">
+    ```bash
+    python3 -m venv .venv && .venv/bin/pip install -e ".[server]"
+    sudo cp deploy/brain.service /etc/systemd/system/ && sudo systemctl enable --now brain
+    ```
+
+    Edit the paths in `deploy/brain.service` first, and put the environment in `/etc/brain.env`.
+  </Tab>
+</Tabs>
+
+## Add TLS
+
+Put a reverse proxy in front. With Caddy:
+
+```text
+brain.example.com {
+    reverse_proxy 127.0.0.1:8787
+}
+```
+
+Set `BRAIN_SECURE_COOKIE=1` once the app is served over HTTPS.
+
+## Read-only snapshot on Vercel
+
+`deploy/vercel.sh` publishes a read-only copy of the vault as a serverless app. It ships a prebuilt index with the deployment, so a new instance does not have to index the vault before it answers.
+
+```bash
+deploy/vercel.sh --prod
+```
+
+The snapshot is a copy from the time of deployment. Writes are refused.
+
+## Keep the vault in sync
+
+The vault is a Git checkout. To pick up changes pushed from elsewhere, pull on a timer:
+
+```text
+*/5 * * * * cd /path/to/vault && git pull -q --ff-only
+```

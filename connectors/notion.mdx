@@ -1,0 +1,48 @@
+---
+title: "Notion sync"
+description: "Two-way sync between Notion databases and typed nodes."
+---
+
+## Set up
+
+1. Create an internal integration in Notion and share each database with it.
+2. Set `NOTION_TOKEN` in the environment.
+3. Map each database in `schema/connectors/notion.yaml`.
+
+```bash
+brain sync notion --dry-run        # show what would change
+brain sync notion                  # pull and push
+brain sync notion --pull-only --only decision
+```
+
+## The mapping file
+
+Each entry maps one Notion database to one node type.
+
+| Key | Meaning |
+|---|---|
+| `type` | The node type the rows become |
+| `database` | The Notion database id |
+| `title` | The Notion title property |
+| `props` | Brain field to Notion property. Use `{prop, values}` to map Notion options to enum values |
+| `where` | Only rows whose property matches |
+| `create` | Push nodes created in the brain to Notion as new rows |
+| `import` | Pull rows that match no node in as new nodes. Default true |
+| `import_where` | Only matching rows become new nodes; others still update nodes already linked |
+| `body` | Pull the page content into the node body when the node is first created |
+| `body_props` | Rich-text properties written as `## Property` sections of the body on first create |
+| `defaults` | Fields every imported row gets, for example a group |
+
+## How conflicts are settled
+
+Rows and nodes are matched by `notion_id`, then by title.
+
+- If only one side changed a mapped field since the last sync, that side wins.
+- If both changed it, the brain keeps its value and the Notion value goes to Review for the owner to decide.
+- A Notion option with no mapped brain value is left alone.
+
+Sync state is kept in `.brain/sync/notion.json`.
+
+## Testing safely
+
+Never run the sync in a test copy of the vault: it writes to the real Notion workspace. See [Testing](/operations/testing).

@@ -1,0 +1,42 @@
+---
+title: "Testing"
+description: "Run the tests and try changes without touching the real vault."
+---
+
+## Unit tests and lint
+
+```bash
+pytest -q
+ruff check .
+```
+
+The tests use a small fixture vault in `tests/fixtures/`. They never read the real vault and never call Notion or Google.
+
+## Trying changes against real data
+
+Use a copy, never the live vault.
+
+```bash
+cp -r /path/to/vault /tmp/vault-test
+rm -rf /tmp/vault-test/.brain/sync          # so nothing can sync to Notion
+BRAIN_ROOT=/tmp/vault-test BRAIN_PASSWORD=test BRAIN_SECRET_KEY=test \
+  brain serve --port 8766
+```
+
+- Use a different port from the live app.
+- Do not set `NOTION_TOKEN` in the test shell, and do not run `brain sync notion` in a copy.
+- Add `BRAIN_READONLY=1` to test the read-only behaviour.
+
+## What the agent layer was tested against
+
+On a copy of a 1,600-note vault, 36 checks passed across the three entry points:
+
+- **CLI:** current-state and topic briefings, budgets of 200, 600 and 3,000 tokens, topics with no page, JSON output, and every command in the skill file.
+- **MCP:** start-up, tool listing, `brain_context`, `brain_skill`, `brain_get`, `brain_ask`.
+- **HTTP:** requests without a token are refused; `/api/context`, `/api/skill`, `/api/ask` and `/api/search` return the same content as the CLI.
+
+## What the Google Drive connector was tested against
+
+A local server that imitates Google's token and Drive endpoints. 14 checks passed: both credential types, paged listings, a retry after a `503`, nested folders, Markdown and plain-text export, skipped file types, unchanged documents, changed and renamed documents, and a failure partway through followed by a clean retry.
+
+It has not been run against Google itself.

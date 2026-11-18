@@ -1,0 +1,15 @@
+---
+title: "Publishing public pages"
+description: "Build a public wiki from the nodes marked public."
+---
+
+```bash
+brain publish <wiki checkout>            # dry run: show what would be written
+brain publish <wiki checkout> --write
+```
+
+Publishing reads only nodes whose visibility is `public`. It writes `wiki/<section>/<slug>.md`, an index block and a log entry in the target checkout.
+
+- Hand-written pages in the target are never touched.
+- A page that stops being public is taken down on the next run.
+- `private` and `secret` nodes never leave the vault.

@@ -1,0 +1,41 @@
+---
+title: "Writing back"
+description: "How agents add knowledge without damaging the vault."
+---
+
+## Set your name
+
+Set `BRAIN_ACTOR=<agent name>` for the CLI and MCP. Over HTTP the token name is the actor. Writes are attributed to it.
+
+## Choose the right write
+
+| You have | Use |
+|---|---|
+| Something worth keeping, and no clear place for it | `brain capture "<text>"` |
+| A fact about an existing node, with a source | `brain claim <id> "<fact>" --source <id or URL> --confidence low` |
+| A new page | `brain add <type> "<title>" -f key=value`, or `brain add auto "<title>"` to infer the type |
+| A field change or a new link | `brain set`, `brain link` |
+
+`capture` and `claim` apply at once. `add`, `set` and `link` are filed as proposals, and the owner accepts or rejects them in the web app or with `brain accept <id>` and `brain reject <id>`.
+
+## Capture syntax
+
+One line can create a typed node, set fields and reference other nodes:
+
+```bash
+brain capture "Dana Wu #person company:: Kaiser; wants an intro to @arman"
+```
+
+- `#person` gives the type.
+- `key:: value` sets a field.
+- `@name` references an existing node.
+
+## Rules
+
+- Never write a claim without a source.
+- Use `high` confidence only for what the owner told you directly.
+- Do not edit vault files by hand. The tool validates writes against the schema.
+- Do not paste transcripts into pages. Import them as sources.
+- Do not rewrite the owner's writing.
+- Do not add a new node type.
+- Do not edit generated pages such as `today.md` and `daily/*`.

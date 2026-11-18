@@ -1,0 +1,52 @@
+---
+title: "HTTP API"
+description: "Reach the vault from another machine with a bearer token."
+---
+
+## Authentication
+
+Every `/api/*` request needs a token:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" "https://brain.example.com/api/context?topic=Orbit"
+```
+
+Tokens are set on the server in `BRAIN_API_TOKENS` as `name:token` pairs separated by commas. The name becomes the actor for that agent's writes. A token must be at least 16 characters, and the name `jack` is not allowed.
+
+```bash
+python3 -c "import secrets; print('agent-name:' + secrets.token_urlsafe(32))"
+```
+
+A missing or wrong token returns `401`.
+
+## Read
+
+| Request | Returns |
+|---|---|
+| `GET /api/context` | `{"context": …}` for the owner's current state |
+| `GET /api/context?topic=<topic>&budget=1500` | `{"context": …}` for a topic briefing |
+| `GET /api/skill` | `{"skill": …}` |
+| `GET /api/search?q=<words>&type=<type>&limit=12` | `{"hits": […]}`; `limit` is at most 50 |
+| `GET /api/ask?q=<question>` | An answer with its sources |
+| `GET /api/node/<id>` | One node. Add `body=0` to leave out the body |
+| `GET /api/query?q=<query>` | `{"rows": […]}`, or `400` with an error for a bad query |
+| `GET /api/types` | `{"types": […]}` |
+| `GET /api/mentions/<ref>` | Excerpts that mention a node |
+
+## Write
+
+Send JSON with `Content-Type: application/json`.
+
+| Request | Body | For an agent |
+|---|---|---|
+| `POST /api/capture` | `{"text": "…"}` | Applied directly |
+| `POST /api/claim` | `{"ref": "…", "text": "…", "source": "…", "confidence": "low"}` | Applied directly |
+| `POST /api/add` | `{"type": "…", "title": "…", "fields": {…}, "body": "…"}` | Proposal |
+| `POST /api/set` | `{"ref": "…", "field": "…", "value": "…"}` | Proposal |
+| `POST /api/link` | `{"ref": "…", "to": "…", "note": "…"}` | Proposal |
+
+Previews that write nothing: `POST /api/parse`, `POST /api/magic` and `POST /api/suggest`.
+
+## Read-only servers
+
+A server started with `BRAIN_READONLY=1` refuses writes. The three preview requests still work.

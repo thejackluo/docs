@@ -1,0 +1,43 @@
+---
+title: "Web app"
+description: "Browse, capture and review in a password-protected app."
+---
+
+```bash
+BRAIN_PASSWORD=choose-one brain serve --port 8787
+```
+
+For anything reachable from the internet, use a password hash and a session key instead. See [Deploy](/operations/deploy).
+
+## Pages
+
+| Page | Address | What it shows |
+|---|---|---|
+| Now | `/` | Beliefs, open decisions, recent pages, and what was added in the last 30 days |
+| Node | `/n/<id>` | One node: fields, claims, body, group, linked and unlinked references |
+| Type | `/t/<type>` | Every node of one type as a table, with group filters and sorting |
+| Graph | `/graph` | All nodes and connections, clustered by type and group |
+| Timeline | `/timeline` | Dated nodes in order |
+| Date | `/dates/<YYYY-MM-DD>` | Everything dated or mentioning that day |
+| Search | `/search` | Full-text search; also opens with Cmd+K or Ctrl+K |
+| Ask | `/ask` | A question answered with quoted sources |
+| Query | `/q` | A structured query |
+| Review | `/review` | Proposals from agents and sync conflicts, to accept or reject |
+| Health | `/health` | Broken links, orphans and schema problems |
+| Types | `/types` | The schema |
+
+## Capture
+
+The capture bar on the Now page appends to today's journal. A line with a `#type` creates that node. If a line looks like a page but has no type, the bar suggests one.
+
+## Snapshot age
+
+A hand-written page that states `Last updated: YYYY-MM-DD` shows a "snapshot as of" badge with its age. The badge turns red after 45 days.
+
+## Read-only mode
+
+Start the server with `BRAIN_READONLY=1` to serve a copy that cannot be changed. Capture, editing and review actions are refused.
+
+## Status check
+
+`GET /healthz` needs no sign-in and reports whether the server is up and whether it is using a prebuilt index.

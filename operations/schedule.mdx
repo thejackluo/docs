@@ -1,0 +1,45 @@
+---
+title: "Scheduled sync"
+description: "Keep the vault current with one cron job."
+---
+
+One script, run every 15 minutes, keeps a server's vault current:
+
+```text
+*/15 * * * * /path/to/brain-cron.sh
+```
+
+Each run does the following in order:
+
+1. Syncs Notion both ways.
+2. Imports any files in `inbox/granola`, `inbox/chatgpt`, `inbox/rolo` and `inbox/devin`, then moves them to `inbox/done/`.
+3. Rebuilds the index.
+4. Commits the changed data files to the vault's Git branch.
+5. Redeploys the read-only snapshot if anything changed, at most once an hour.
+
+A lock file stops two runs from overlapping. Output goes to a log file next to the script.
+
+## A minimal version
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+exec 9>"$HOME/.brain-cron.lock"; flock -n 9 || exit 0
+set -a; . "$HOME/.config/brain/env"; set +a
+cd /path/to/vault
+brain sync notion
+for kind in granola chatgpt rolo devin; do
+  for f in inbox/$kind/*; do
+    [ -e "$f" ] || continue
+    brain import "$kind" "$f" && mkdir -p inbox/done && mv "$f" inbox/done/
+  done
+done
+brain lint >/dev/null || true
+git add -A && git commit -qm "sync: $(date -u +%FT%TZ)" || true
+```
+
+Keep tokens in the environment file, not in the script.
+
+## Google Drive
+
+The Drive import is not part of the scheduled run. Add `brain import gdrive <folders>` to the script once credentials are set and a dry run looks right.

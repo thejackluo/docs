@@ -1,0 +1,51 @@
+---
+title: "Search and Ask"
+description: "Find notes by words, and answer questions with quoted sources."
+---
+
+## Search
+
+```bash
+brain search "pricing workshop"
+brain search "wu" --type person
+```
+
+Search uses SQLite full-text search over titles, aliases and bodies, ranked with BM25. If a strict match finds nothing it falls back to a looser one, and it also brings in notes connected to the best matches.
+
+Search understands a few question shapes:
+
+- A date in the query pulls in the notes dated that day.
+- "How do X and Y relate" treats both pages as the subject.
+- A page whose title answers the question ranks above a long transcript that happens to contain the same words.
+
+## Ask
+
+```bash
+brain ask "What did we decide about per-seat pricing?"
+```
+
+Ask retrieves the best notes, then answers from them. There are two modes:
+
+| Mode | How it answers | Needs |
+|---|---|---|
+| `extractive` (default) | Quotes the most relevant lines, each with its note id | Nothing; works offline |
+| `haiku` | A small model writes a short answer from those lines and must cite them | `ANTHROPIC_API_KEY` |
+
+Notes marked `secret` are never sent to the model.
+
+## Structured queries
+
+When you want a list by field values, use a query instead of search. See the [query language](/reference/query-language).
+
+```bash
+brain query 'person where last_contact < -60d and closeness >= 4 sort last_contact'
+```
+
+## Benchmarks
+
+```bash
+brain bench --out bench                              # search compared with plain retrieval as the vault grows
+brain bench --ask bench/ask_cases.yaml --out bench   # hand-written questions through Ask
+```
+
+Reports are written to `bench/` and are not indexed as notes.

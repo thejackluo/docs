@@ -1,0 +1,47 @@
+---
+title: "How it works"
+description: "The layers between a Markdown file and an answer."
+---
+
+## The layers
+
+```text
+Markdown files in Git        the only source of truth
+        │
+   schema/*.yaml             what each node type is and which fields it has
+        │
+   .brain/index.sqlite       derived: fields, links, mentions, full-text search
+        │
+   Brain (brain/core.py)     one API for reads and writes
+        │
+ ┌──────┼───────────┬────────────┐
+ CLI    MCP server  HTTP API     Web app
+```
+
+All four entry points call the same `Brain` object, so a search from the CLI, an MCP tool call and a request to `/api/search` return the same result.
+
+## Three kinds of content
+
+| Layer | Folders | Rule |
+|---|---|---|
+| Sources | `raw/` | Imported material such as transcripts and documents. Never edited after import. |
+| Typed nodes | `people/`, `meetings/`, `decisions/`, `projects/` and others | Fields and short sourced claims. |
+| Written pages | `about/`, `history/`, `places/` and others | Longer synthesis written by hand. |
+
+Transcripts do not go into person pages. Store the transcript as a source and link to it.
+
+## The index
+
+The index is a SQLite file at `.brain/index.sqlite`. It is rebuilt when files change and is never committed. The web app does not make a request wait for a rebuild: when files change outside the process, for example after a sync, it serves the previous index and rebuilds in the background.
+
+## Who can write what
+
+Every write has an actor. The owner's writes apply directly. For any other actor:
+
+| Operation | What happens |
+|---|---|
+| `capture`, `claim` | Applied directly, attributed to the actor |
+| `add`, `set`, `link` | Filed as a proposal for the owner to accept or reject |
+| Editing a page body, rewriting links | Owner only |
+
+Proposals are JSON files in `proposals/` and appear in the web app under Review.
