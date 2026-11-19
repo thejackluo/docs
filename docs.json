@@ -8,7 +8,7 @@
     "groups": [
       { "group": "Start here", "pages": ["index", "quickstart", "how-it-works"] },
       { "group": "Concepts", "pages": ["concepts/nodes-and-types", "concepts/claims-and-freshness", "concepts/links-and-groups", "concepts/search-and-ask"] },
-      { "group": "Agents", "pages": ["agents/overview", "agents/context", "agents/mcp", "agents/http-api", "agents/writing"] },
+      { "group": "Agents", "pages": ["agents/overview", "agents/context", "agents/install", "agents/mcp", "agents/http-api", "agents/writing"] },
       { "group": "Connectors", "pages": ["connectors/notion", "connectors/imports", "connectors/google-drive", "connectors/publish"] },
       { "group": "Operations", "pages": ["operations/web-app", "operations/deploy", "operations/schedule", "operations/testing"] },
       { "group": "Reference", "pages": ["reference/cli", "reference/query-language", "reference/environment"] }
